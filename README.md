@@ -129,6 +129,299 @@ grep -i "adriaens" Sandbox.csv | cut -d ',' -f 2,6,18
 
 
 ## _Soal 2_
+Dikerjakan oleh Aisha Ayya Ratiandari-5027231056
+
+Nomor ini diminta untuk membuat menu register dengan ketentuan berikut:
+- Setiap admin maupun user harus melakukan register terlebih dahulu menggunakan email, username, pertanyaan keamanan dan jawaban, dan password
+- dimana setiap akunnya akan disimpan dalam file users.txt
+- lalu diminta untuk membuat menu login dengan pilihan untuk login, atau jika lupa password
+- jika login dengan akun admin, maka munculkan menu admin dengan isi:
+  - Add user
+  - Edit user
+  - Remove user
+  - Logout
+- Semua registrasi dan login akan direkap ke dalam file auth.log
+
+### Membuat menu Register di file register.sh
+1. Kita membuat function untuk memastikan kalau email yang diinputkan user itu unik (belum diinputkan sebelumnya)
+   mengambil data email (variabel) dari file users.txt dan jika sudah pernah dipakai maka return 0, jika belum maka return 1
+   ```
+    function check_email() {
+        local email="$1" # bikin variabel "email"
+        if grep -q "^$email:" users.txt; then
+            return 0 # Email udah dipake
+        else
+            return 1 # Email belum dipake
+        fi
+    }
+    ```
+2. Membuat function untuk mengenkripsi password menggunakan base 64 dengan mengambil password dari input user lalu mengenkripsikannya dengan base64 tanpa membuat line baru
+   ```
+   function encrypt_password() {
+        local password="$1"
+        local encrypted_password=$(echo -n "$password" | base64)
+        echo "$encrypted_password"
+    }
+   ```
+4. Membuat function untuk membuat akun barunya
+   - menggunakan variabel berupa email, username, security question, security answer, dan password
+    ```
+    function register() {
+        local email="$1"
+        local username="$2"
+        local security_question="$3"
+        local security_answer="$4"
+        local password="$5"
+    ```
+   - mengecek apakah email yang diinputkan pernah dipakai sebelumnya, menggunakan function "check_email"
+     ```
+     if check_email "$email"; then
+        echo "Email sudah terpakai."
+        exit 1
+     fi
+     ```
+   - Mengecek apakah password yang dibuat memenuhi kriteria menggunakan loop. Jika password yang diinput tidak memenuhi kriteria, maka lakukan loopnya hingga password user memenuhi kriteria
+    ```
+   while true; do
+        read -s -p "Enter password: " password
+        echo
+
+        # Kalau ngga, suruh ulang
+        if [[ "$password" =~ [[:upper:]] && "$password" =~ [[:lower:]] && "$password" =~ [[:digit:]] && ${#password} -ge 8 ]]; then
+            break  # Berhentiin loop klau udah memenuhi kriteria
+        else
+            echo "Password must contain at least 1 uppercase letter, 1 lowercase letter, 1 digit, and be at least 8 characters long."
+            echo "Please try again."
+        fi
+    done
+    ```
+   - Password tersebut akan dienkripsi menggunakan function "encrypt_password" dan akan disimpan dalam variabel "encrypted_password"
+     ```
+     local encrypted_password=$(encrypt_password "$password")
+     ```
+   - Cek apakah user menginput email sebagai admin, sesuai soal dimana email mengandung kata admin maka akun tersebut akan bertipe admin, jika tidak maka akan menjadi tipe "user"
+     ```
+        if [[ "$email" == *"admin"* ]]; then
+            user_type="admin"
+        else
+            user_type="user"
+        fi
+     ```
+   - Terakhir, tambahkan informasi user ke file users.txt lalu menampilkan output "Registrasi berhasil" dan merekapnya ke dalam file auth.log
+    ```
+    echo "$email:$username:$security_question:$security_answer:$encrypted_password:$user_type" >>/Users/rrrreins/sisop/mod1-soal2/users.txt
+    echo "Registration successful."
+    echo "$(date '+[%d/%m/%y %H:%M:%S]') [REGISTER SUCCESS] Registrasi user $username berhasil." >>/Users/rrrreins/sisop/mod1-soal2/auth.log
+    ```
+6. Dalam main script, kita akan mengoutputkan beberapa line seperti "selamat datang", meminta email, username, security question, security answer
+    ```
+   echo "Welcome to Registration System"
+        read -p "Enter email: " email
+        read -p "Enter username: " username
+        read -p "Enter security question: " security_question
+        read -p "Enter security answer: " security_answer
+    echo
+    ```
+8. Lalu input user tersebut akan kita balikkan ke function register
+    ```
+   register "$email" "$username" "$security_question" "$security_answer" "$password"
+    ```
+Maka jika kita panggil, akan muncul seperti ini:
+
+
+### Membuat Menu Login di file login.sh
+1. Bikin fungsi untuk mastiin kalau informasi user sudah terbuat sebelumnya
+   - Mencari informasi user di file users.txt, kalau ga nemu, kembali ke menu awal dengan output "User tidak ditemukan"
+     ```
+         local email="$1"
+        local password="$2"
+
+        local user_info=$(grep "^$email:" /Users/rrrreins/sisop/mod1-soal2/users.txt)
+
+	
+        if [ -z "$user_info" ]; then
+        echo "User with email $email not found."
+        exit 1
+        fi
+     ```
+   - Menyamakan password yang diinputkan dengan yang sudah tersimpan, dengan mengambil informasi password dari data yang masih dienkripsi yang kemudian Password tersebut akan kita dekripsi pake base64 lagi
+       ```
+        local encrypted_password=$(echo "$user_info" | cut -d: -f5)
+
+        local decrypted_password=$(echo "$encrypted_password" | base64 -d)
+       ```
+   - Cek apakah password yang diinputkan user sama dengan password yang tersimpan, jika salah maka kembali ke menu awl dan tampilkan output "Password salah"
+     ```
+         if [ "$password" != "$decrypted_password" ]; then
+            echo "Incorrect password."
+            exit 1
+        fi
+     ```
+   - Cek apakah user menginputkan akun admin, jika bukan munculkan output "User berhasil login" dan kembali ke menu awal
+     ```
+            local user_type=$(echo "$user_info" | cut -d: -f6)
+        if [ "$user_type" != "admin" ]; then
+            echo "User $email berhasil login!"
+            exit 1
+        fi
+     ```
+   - Mengoutputkan hasil login (apakah berhasil atau gagal) ke dalam file auth.log beserta waktu dan tanggalnya. Kemudian masuk ke dalam function admin_menu dengan menggunakan variabel "email"
+     ```
+     echo "Login successful!"
+        echo "$(date '+[%d/%m/%y %H:%M:%S]') [LOGIN SUCCESS] User $email berhasil log in." >> /Users/rrrreins/sisop/mod1-soal2/auth.log
+		
+		admin_menu "$email"
+		return 0
+        }
+     ```
+3. Bikin fungsi untuk ospi lupa password
+    ```
+   function forgot_password() {
+    local email="$1"
+    ```
+   - cari usernya menggunakan input email di users.txt, kalau ga ketemu, balik ke menu awal dan mengoutputkan "User tidak ditemukan"
+     ```
+        local user_info=$(grep "^$email:" /Users/rrrreins/sisop/mod1-soal2/users.txt)
+
+        if [ -z "$user_info" ]; then
+            echo "User with email $email not found."
+            return 1
+        fi
+     ```
+   - kalau berhasil, ambil informasi security question dari data lalu prompt ke user untuk memberikan jawaban yang tepat. Ambil informasi security answer dari data lalu cek apakah jawaban yang diinputkan user sama dengan yang ada di data. Jika tidak maka akan menampilkan "Incorrect answer" dan kembali ke menu awal
+     ```
+     local security_question=$(echo "$user_info" | cut -d: -f3)
+
+     read -p "Security Question: $security_question " provided_security_answer
+
+     local stored_security_answer=$(echo "$user_info" | cut -d: -f4)
+
+     if [ "$provided_security_answer" != "$stored_security_answer" ]; then
+     echo "Incorrect answer."
+     return 1
+     fi
+     ```
+   - jika benar maka tampilkan passowrd user yang masih di-enkripsi lalu didekripsi menggunakan function decrypted password dan tampilkan hasilnya
+     ```
+     local encrypted_password=$(echo "$user_info" | cut -d: -f5)
+     local decrypted_password=$(echo "$encrypted_password" | base64 -d)
+     echo "Your password is: $decrypted_password"
+     return 0
+     }
+     ```
+5. Buat function untuk menampilkan menu admin
+   Menampilkan tampilan admin menu berupa add, edit, dan remove user, juga untuk logout. Lalu menggunakan case untuk memilih salah satu opsi yang tersedia, semua dilakukan dalam loop dan berhenti jika sudah memilih opsinya
+   ```
+   function admin_menu() {
+       local email="$1"
+       while true; do
+        
+        echo "Admin Menu"
+        echo "1. Add User"
+        echo "2. Edit User"
+        echo "3. Remove User"
+        echo "4. Logout"
+        read -p "Choose an option: " admin_option
+
+        case $admin_option in
+            1)
+                add_user
+                ;;
+            2)
+                read -p "Enter user's email to edit: " edit_email
+                edit_user "$edit_email"
+                ;;
+            3)
+                read -p "Enter user's email to remove: " remove_email
+                remove_user "$remove_email"
+                ;;
+            4)
+                echo "Logging out..."
+                exit 0
+                ;;
+            *)
+                echo "Invalid option. Please choose again."
+                ;;
+        esac
+    done
+    }
+   ```
+   dalam kode di atas kita menggunakan statement case untuk memberi opsi kepada user untuk memilih opsi yang telah disediakan,
+   jika memilih opsi pertama maka akan diarahkan ke function add_user
+   jika memilih opsi ke-2 dan ke-3 maka akan diminta untuk meng-inputkan email lalu diarahkan ke function edit_user dan remove_user menggunakan email tersebut
+   dan jika memilih opsi terakhir, maka akan dikeluarkan dari program
+   - Membuat function untuk add user
+     dengan mengarahkannya ke menu register yang sudah dibuat sebelumnya
+     ```
+     /Users/rrrreins/sisop/mod1-soal2/register.sh
+     ```
+   - Membuat function untuk mengedit user
+     disini mengedit hanya bisa untuk mengganti username dan password
+     mengecek apakah user terdaftar dalam users.txt
+     ```
+     if grep -q "^$email:" /Users/rrrreins/sisop/mod1-soal2/users.txt; then
+        read -p "Enter new username (leave blank to keep current): " new_username
+        read -s -p "Enter new password (leave blank to keep current): " new_password
+        echo # Move to a new line after entering password
+     ```
+     untuk membuat username baru (jika ingin masih sama, bisa dilewatkan) dan untuk untuk membuat password baru(jika ingin masih sama, bisa dilewatkan)
+     ```
+     if [ -n "$new_username" ]; then
+         sed -i "s/^$email:[^:]*:/&$new_username:/" /Users/rrrreins/sisop/mod1-soal2/users.txt
+         echo "Username updated successfully for $email."
+     fi
+
+     if [ -n "$new_password" ]; then
+         # Encrypt the new password
+         local encrypted_password=$(encrypt_password "$new_password")
+         # Update the password in the file
+         sed -i "s/^$email:[^:]*:[^:]*:/&$encrypted_password:/" /Users/rrrreins/sisop/mod1-soal2/users.txt
+         echo "Password updated successfully for $email."
+     fi
+     ```
+   - Membuat function untuk me-remove user
+     ```
+     function remove_user() {
+     local email="$1"
+    
+     if grep -q "^$email:" /Users/rrrreins/sisop/mod1-soal2/users.txt; then
+         # Remove user from users.txt
+         sed -i "/^$email:/d" /Users/rrrreins/sisop/mod1-soal2/users.txt
+         echo "User with email $email removed successfully."
+     else
+        echo "User with email $email not found."
+     fi
+     }
+     ```
+     dalam kode diatas, kita membuat functioun untuk menghapus user. Setelah mengecek apakah email yang diinputkan sesuai, maka akan menghapus user yang tersimpan datanya di users.txt dimana jika berhasil maka akan menghasilkan output "User telah berhasil dihapus"
+7. Dalam main script, kita akan mengoutputkan beberapa line seperti "selamat datang", opsi Login dan Forgot Password
+    ```
+    echo "Welcome to Login System"
+    echo "1. Login"
+    echo "2. Forgot Password"
+    read -p "Enter your choice: " choice
+    ```
+   - jika memilihi opsi "login" maka usr akan diminta untuk menampilkan email dan passwordnya, yang lalu, menggunakan function authenticate_user, untuk mengecek apakah user sudah terbuat atau belum
+   - jika memilih opsi "Forgot Password" maka user akan diminta untuk meng-input emailnya yanag akan di proses melalui function "forgot_password"
+     ```
+        case $choice in
+        1)
+            # Login option selected
+            read -p "Enter email: " email
+            read -s -p "Enter password: " password
+            echo
+            authenticate_user "$email" "$password"
+            ;;
+        2)
+            # Forgot Password option selected
+            read -p "Enter email: " email
+            forgot_password "$email" 
+            ;;
+        *)
+            echo "Invalid choice. Please select 1 or 2."
+            ;;
+	    esac
+     ```
 ## _Soal 3_
 ### Dikerjakan Oleh Gandhi Ert Julio (5027231081)
 Soal nomor 3 ini berfokus pada manipulasi dan otomatisasi tugas-tugas terkait dengan file yang diunduh dari sebuah game, yang di sini menggunakan contoh dari game Genshin Impact. Soal ini melibatkan pengetahuan tentang skrip bash, handling file di Linux, decoding dari hexadecimal, dan automasi dengan cron jobs. Untuk menangani soal ini, berikut langkah-langkah yang mungkin perlu diambil:
