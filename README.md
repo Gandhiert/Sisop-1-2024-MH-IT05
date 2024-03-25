@@ -108,8 +108,7 @@ grep -i "adriaens" Sandbox.csv | cut -d ',' -f 2,6,18
 
 ### Dokumentasi
 
-![](https://im.ge/i/Screenshot-from-2024-03-25-20-09-38.WXb01G)
-
+[![Hasil ketika membuka sandbox.sh](https://i.im.ge/2024/03/25/WXc0E4.Screenshot-from-2024-03-25-20-09-38.png)](https://im.ge/i/Screenshot-from-2024-03-25-20-09-38.WXc0E4)
 
 ### Soal 2
 ### Soal 3
