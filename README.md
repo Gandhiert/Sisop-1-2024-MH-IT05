@@ -106,6 +106,11 @@ awk -F ',' 'NR>1{print $14","$20}' Sandbox.csv | sort -t ',' -k 2 -nr | head -3
 grep -i "adriaens" Sandbox.csv | cut -d ',' -f 2,6,18
 `
 
+### Dokumentasi
+
+![](https://im.ge/i/Screenshot-from-2024-03-25-20-09-38.WXb01G)
+
+
 ### Soal 2
 ### Soal 3
 ### Soal 4
