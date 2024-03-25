@@ -1,4 +1,10 @@
+<div align=center>
+
 # Laporan Pengerjaan - Praktikum 1 Sistem Operasi
+
+</div>
+
+
 ## Kelompok IT05 - MH
 Fikri Aulia As Sa'adi - 5027231026
 
