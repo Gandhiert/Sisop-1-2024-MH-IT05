@@ -569,4 +569,172 @@ di baris fungsi terakhir dari shell search.sh, ini akan membaca URL rahasia dari
 ![image](https://github.com/Gandhiert/NYOBA/assets/136203533/b289883a-f6f5-4620-966b-9b224d7f1013)
 
 >Format image.log
+
 ## _Soal 4_
+### Dikerjakan Oleh Gandhi Ert Julio (5027231081)
+Soal nomor 4 ini berfokus untuk membuat beberapa skrip bash untuk memonitor sumber daya sistem dan melakukan agregasi data. Berikut adalah langkah-langkah yang harus dilakukan berdasarkan instruksi yang ada:
+1. Membuat Skrip Pemantauan Sistem
+2. Penamaan dan Penyimpanan File Log
+3. Menulis Skrip Agregasi
+4. Perlindungan Privasi File Log
+5. Konfigurasi Cron Job
+
+### aggregate_minutes_to_hourly_log.sh
+```bash
+log_directory="/home/masgan/log"
+
+current_hour=$(date +"%Y%m%d%H")
+aggregated_log_file="${log_directory}/metrics_agg_${current_hour}.log"
+```
+Script bash yang pertama akan menentukan direktori tempat file log akan disimpan `/home/masgan/log`
+lalu mendapatkan jam saat ini untuk penamaan file log agregat.
+
+```bash
+convert_to_mb() {
+    size=$1
+    if [[ $size == *M ]]; then
+        echo $size | sed 's/M//'
+    elif [[ $size == *K ]]; then
+        echo $size | awk '{printf "%.2f\n", $1 / 1024}' | sed 's/$/M/'
+    else
+        echo $size
+    fi
+}
+```
+Baris berikut berfungsi untuk mengkonversi nilai ukuran file ke mb, karena di virtual machine saya sering menunjukan satuan kilobytes, jadi saya ingin mengubahnya ke megabytes. Kilobytes konversi ke MB dengan membagi 1024 dan format menjadi 2 desimal.
+
+```bash
+
+# Menuliskan header kolom ke file log agregat
+echo "type,mem_total,mem_used,mem_free,mem_shared,mem_buff,mem_available,swap_total,swap_used,swap_free,path,path_size" > "$aggregated_log_file"
+```
+lalu di baris ini untuk menuliskan header kolom ke file log agregat
+```bash
+min_path_size=$(du -sh "${log_directory}" | cut -f1)
+max_path_size=$min_path_size
+min_path_size=$(convert_to_mb "$min_path_size")
+max_path_size=$(convert_to_mb "$max_path_size")
+
+declare -A min max avg
+
+metrics=(mem_total mem_used mem_free mem_shared mem_buff mem_available swap_total swap_used swap_free)
+```
+Di bagian ini berfungsi untuk menginisialisasi nilai minimum dan maksimum untuk ukuran path, Mendeklarasikan associative array untuk nilai minimum, maksimum, dan rata-rata dengan fungsi `declare`, dan mendefinisikan array metrik yang akan dimonitor.
+
+```bash
+for metric in "${metrics[@]}"; do
+    min["$metric"]=999999
+    max["$metric"]=0
+done
+```
+Menginisialisasi nilai minimum dan maksimum untuk setiap metrik dalam baris ini.
+```bash
+for file in "${log_directory}"/metrics_"${current_hour}"*.log; do
+    if [[ -r "$file" && -s "$file" ]]; then
+        while IFS=',' read -r "${metrics[@]}" _ path_size; do
+            [[ $mem_total == "mem_total" ]] && continue
+
+            for metric in "${metrics[@]}"; do
+                (( ${!metric} < min["$metric"] )) && min["$metric"]=${!metric}
+                (( ${!metric} > max["$metric"] )) && max["$metric"]=${!metric}
+            done
+
+            path_size=$(convert_to_mb "$path_size")
+            [[ "$path_size" < "$min_path_size" ]] && min_path_size=$path_size
+            [[ "$path_size" > "$max_path_size" ]] && max_path_size=$path_size
+        done < "$file"
+    fi
+done
+```
+Di bagian fungsi ini berguna untuk membaca setiap file log per menit dan mengumpulkan data untuk agregasi dengan memastikan file bisa dibaca dan memiliki ukuran (tidak kosong). Lalu memperbarui nilai minimum dan maksimum untuk setiap metrik dan mengkonversi ukuran path ke MB dan memperbarui nilai minimum dan maksimum.
+
+```bash
+# Menghitung rata-rata untuk setiap metrik menggunakan bc untuk operasi floating point
+for metric in "${metrics[@]}"; do
+    avg["$metric"]=$(echo "scale=2; (${min["$metric"]} + ${max["$metric"]}) / 2" | bc)
+done
+
+average_path_size=$(echo "scale=2; ($(echo $min_path_size | sed 's/M//g') + $(echo $max_path_size | sed 's/M//g')) / 2" | bc)
+average_path_size="${average_path_size}M"
+```
+Pada baris kode ini kita menghitung rata-rata untuk setiap metrik menggunakan `bc` untuk operasi floating point. Lalu menghitung rata-rata untuk setiap metrik menggunakan `bc` untuk operasi floating point.
+
+```bash
+{
+    echo -n "minimum,"
+    for metric in "${metrics[@]}"; do echo -n "${min[$metric]},"; done
+    echo "${log_directory},${min_path_size}"
+    
+    echo -n "maximum,"
+    for metric in "${metrics[@]}"; do echo -n "${max[$metric]},"; done
+    echo "${log_directory},${max_path_size}"
+    
+    echo -n "average,"
+    for metric in "${metrics[@]}"; do echo -n "${avg[$metric]},"; done
+    echo "${log_directory},${average_path_size}"
+} >> "$aggregated_log_file"
+```
+Di bagian ini berfungsi untuk menulis nilai minimum, maksimum, dan rata-rata ke file log agregat.
+```bash
+chmod 600 "$aggregated_log_file"
+```
+Lalu di command ini melakukan pengaturan hak akses file log agregat sehingga hanya bisa dibaca oleh pemiliknya, Ini penting untuk menjaga keamanan data sensitif yang mungkin terdapat dalam log.
+```bash
+59 * * * * /home/masgan/log/aggregate_minutes_to_hourly_log.sh
+```
+Lalu di sini kita mensetting crontab agar shell bash berjalan tiap menit ke-59 dari suatu jam, agar bisa merangkum 59 menit dari metrics sebelumnya.
+
+![image](https://github.com/Gandhiert/BARU-NYOBA/assets/136203533/1169b385-e595-44fd-9b1d-e263ab5a04f3)
+>Contoh format metrics
+
+![image](https://github.com/Gandhiert/BARU-NYOBA/assets/136203533/dcee78c8-fa4b-4c28-95ab-00f62e39d62e)
+>Hasil dari isi file log metricsnya
+
+
+### minute_log.sh
+```bash
+current_time=$(date +"%Y%m%d%H%M%S")
+
+log_directory="/home/masgan/log"
+
+mkdir -p "$log_directory"
+```
+Di baris pertama ini fungsinya untuk mendapatkan waktu saat ini dengan format tahun bulan hari tanggal jam menit detik. Menetapkan direktori tempat file log akan disimpan. Dan membuat direktori log jika belum ada.
+
+```bash
+chmod 700 "$log_directory"
+```
+disini kita mengatur hak akses direktori log agar hanya pemilik yang bisa membaca, menulis, dan masuk ke direktori
+
+```bash
+log_file="${log_directory}/metrics_${current_time}.log"
+```
+Menetapkan path file log dengan menambahkan timestamp untuk membedakan setiap file pada baris ini.
+```bash
+mem_usage=$(free -m | awk 'NR==2{printf "%s,%s,%s,%s,%s,%s,%s,%s,%s\n", $2,$3,$4,$5,$6,$7,$2-$7,$5,$6}')
+
+disk_usage=$(du -sh /home/masgan/log/ | awk '{print $1}')
+```
+Pada sektor ini, kode berfungsi untuk mengumpulkan informasi penggunaan memori dan menyimpan outputnya dalam format CSV serta mengumpulkan informasi penggunaan disk dari direktori log dan menyimpan ukuran direktori.
+```bash
+echo "mem_total,mem_used,mem_free,mem_shared,mem_buff,mem_available,swap_total,swap_used,swap_free,path,path_size" > "$log_file"
+
+echo "$mem_usage,/home/masgan/log/,$disk_usage" >> "$log_file"
+
+chmod 600 "$log_file"
+```
+Lalu pada bagian terakhir dari kode ini, dari `echo` diatas yaitu berfungsi menuliskan header kolom ke file log. `echo` dalam baris kedua berfungsi untuk menuliskan data penggunaan memori dan disk yang dikumpulkan ke file log dan `chmod 600` dalam baris terakhir untuk mengatur hak akses file log agar hanya bisa dibaca dan ditulis oleh pemiliknya.
+```bash
+* * * * * /home/masgan/log/minute_log.sh
+```
+Mensetting crontab agar bisa berjalan tiap menit.
+
+Contoh format/hasil dari isi file adalah sebagai berikut :
+
+![image](https://github.com/Gandhiert/BARU-NYOBA/assets/136203533/e1afbf6d-e71e-4727-8771-ca275c107f8b)
+
+>Contoh format log metrics
+
+![image](https://github.com/Gandhiert/BARU-NYOBA/assets/136203533/a5599e74-177b-4767-aa39-29787bfc5db8)
+>Isi dari Log Metrics tersebut
+
