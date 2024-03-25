@@ -107,10 +107,19 @@ grep -i "adriaens" Sandbox.csv | cut -d ',' -f 2,6,18
 `
 
 ### Dokumentasi
+
+![image](https://github.com/Gandhiert/Sisop-1-2024-MH-IT05/assets/142889150/90b937cf-d413-41c3-8426-bf65ce85def4)
+>File Sandbox.csv ketika dibuka menggunakan terminal
+
+
+![image](https://github.com/Gandhiert/Sisop-1-2024-MH-IT05/assets/142889150/a262d783-adb0-49b7-b98e-72f53a67e8c7)
+>File Sandbox.csv ketika dibuka menggunakan Modern CSV
+
+
 ![image](https://github.com/Gandhiert/Sisop-1-2024-MH-IT05/assets/142889150/9511b736-4922-4e2f-86c1-465fe174b1d0)
+>Hasil ketika menjalankan sandbox.sh
 
 
-[![Hasil Ketika Menjalankan sandbox.sh](https://i.im.ge/2024/03/25/WXc0E4.Screenshot-from-2024-03-25-20-09-38.th.png)](https://im.ge/i/Screenshot-from-2024-03-25-20-09-38.WXc0E4)
 
 ### Soal 2
 ### Soal 3
