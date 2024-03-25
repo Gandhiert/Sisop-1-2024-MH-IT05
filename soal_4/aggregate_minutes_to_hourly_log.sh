@@ -51,7 +51,8 @@ done
 for metric in "${metrics[@]}"; do
     avg["$metric"]=$(echo "scale=2; (${min["$metric"]} + ${max["$metric"]}) / 2" | bc)
 done
-average_path_size=$(echo "$min_path_size + $max_path_size" | sed 's/M//g' | awk '{printf "%.2fM\n", ($1 + $2)/2}')
+average_path_size=$(echo "scale=2; ($(echo $min_path_size | sed 's/M//g') + $(echo $max_path_size | sed 's/M//g')) / 2" | bc)
+average_path_size="${average_path_size}M"
 
 {
     echo -n "minimum,"
