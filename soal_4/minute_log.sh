@@ -1,3 +1,5 @@
+#!/bin/bash
+
 current_time=$(date +"%Y%m%d%H%M%S")
 
 log_directory="/home/masgan/log"
