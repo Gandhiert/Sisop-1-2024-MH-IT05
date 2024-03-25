@@ -37,4 +37,4 @@ for region in "${regions[@]}"; do
 done
 
 secret_url=$(cat "secret.txt")
-wget --output-document=genshin_image.jpg "$secret_url"
+wget --output-document=foto_rahasia.jpg "$secret_url"
