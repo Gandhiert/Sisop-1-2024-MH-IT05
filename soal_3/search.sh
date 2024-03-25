@@ -1,7 +1,7 @@
 #!/bin/bash
 
 direktori=$(pwd)
-log_path="$direktori/log_image.txt"
+log_path="$direktori/image.log"
 txt_dir="$direktori/txt_files"
 url_pattern='(https?|ftp|file)://[-[:alnum:]\+&@#/%?=~_|!:,.;]*[-[:alnum:]\+&@#/%=~_|]'
 
