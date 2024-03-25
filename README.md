@@ -12,7 +12,7 @@ Aisha Ayya Ratiandari - 5027231056
 
 Gandhi Ert Julio - 5027231081
 
-### _Soal 1_
+## _Soal 1_
 ### Dikerjakan Oleh Fikri Aulia As Sa'adi (5027231026)
 Cipung dan abe ingin mendirikan sebuah toko bernama “SandBox”, sedangkan kamu adalah manajer penjualan yang ditunjuk oleh Cipung dan Abe untuk melakukan pelaporan penjualan dan strategi penjualan kedepannya yang akan dilakukan.
 
