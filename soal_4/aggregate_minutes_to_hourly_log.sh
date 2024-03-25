@@ -1,3 +1,5 @@
+#!/bin/bash
+
 log_directory="/home/masgan/log"
 current_hour=$(date +"%Y%m%d%H")
 aggregated_log_file="${log_directory}/metrics_agg_${current_hour}.log"
