@@ -163,7 +163,7 @@ Nomor ini diminta untuk membuat menu register dengan ketentuan berikut:
         echo "$encrypted_password"
     }
    ```
-4. Membuat function untuk membuat akun barunya
+3. Membuat function untuk membuat akun barunya
    - menggunakan variabel berupa email, username, security question, security answer, dan password
     ```
     function register() {
@@ -213,7 +213,7 @@ Nomor ini diminta untuk membuat menu register dengan ketentuan berikut:
     echo "Registration successful."
     echo "$(date '+[%d/%m/%y %H:%M:%S]') [REGISTER SUCCESS] Registrasi user $username berhasil." >>/Users/rrrreins/sisop/mod1-soal2/auth.log
     ```
-6. Dalam main script, kita akan mengoutputkan beberapa line seperti "selamat datang", meminta email, username, security question, security answer
+4. Dalam main script, kita akan mengoutputkan beberapa line seperti "selamat datang", meminta email, username, security question, security answer
     ```
    echo "Welcome to Registration System"
         read -p "Enter email: " email
@@ -222,11 +222,12 @@ Nomor ini diminta untuk membuat menu register dengan ketentuan berikut:
         read -p "Enter security answer: " security_answer
     echo
     ```
-8. Lalu input user tersebut akan kita balikkan ke function register
+5. Lalu input user tersebut akan kita balikkan ke function register
     ```
    register "$email" "$username" "$security_question" "$security_answer" "$password"
     ```
 Maka jika kita panggil, akan muncul seperti ini:
+![Screen Shot 2024-03-25 at 23 37 20](https://github.com/Gandhiert/Sisop-1-2024-MH-IT05/assets/150585861/c677488f-7461-4286-bc23-da2281b5f023)
 
 
 ### Membuat Menu Login di file login.sh
@@ -422,6 +423,14 @@ Maka jika kita panggil, akan muncul seperti ini:
             ;;
 	    esac
      ```
+
+     Untuk dokumentasi hasilnya, dapat terlihat seperti ini:
+![Screen Shot 2024-03-25 at 23 40 28](https://github.com/Rrrrein/coba-coba-3/assets/150585861/0ce1edef-6394-475a-bd6f-9d78a50bce93)
+
+![Screen Shot 2024-03-25 at 23 39 11](https://github.com/Rrrrein/coba-coba-3/assets/150585861/4b3d3622-c75e-43a5-b330-ae4b6df46522)
+
+![Screen Shot 2024-03-25 at 23 38 08](https://github.com/Rrrrein/coba-coba-3/assets/150585861/28e8a7d6-fb93-49e6-9190-60367d920343)
+
 ## _Soal 3_
 ### Dikerjakan Oleh Gandhi Ert Julio (5027231081)
 Soal nomor 3 ini berfokus pada manipulasi dan otomatisasi tugas-tugas terkait dengan file yang diunduh dari sebuah game, yang di sini menggunakan contoh dari game Genshin Impact. Soal ini melibatkan pengetahuan tentang skrip bash, handling file di Linux, decoding dari hexadecimal, dan automasi dengan cron jobs. Untuk menangani soal ini, berikut langkah-langkah yang mungkin perlu diambil:
