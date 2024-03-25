@@ -79,6 +79,33 @@ open Sandbox.csv
 sort -t ',' -k 17 -nr Sandbox.csv | head -n 1 | cut -d ',' -f 6,17
 `
 
+#### _b. Karena karena Cipung dan Abe ingin mengefisienkan penjualannya, mereka ingin merencanakan strategi penjualan untuk customer segment yang memiliki profit paling kecil. Tampilkan customer segment yang memiliki profit paling kecil_
+
+- Langkah pertama adalah dengan mengurutkan data profit yang ada di kolom 20 menggunakan command "sort".
+- Selanjutnya gunakan awk NR untuk memilih customer segment (kolom 7) yang memiliki profit (kolom 20) paling rendah.
+`
+sort -t ',' -k 20 -n Sandbox.csv | awk -F ',' 'NR==2{print $7, $20}'
+`
+
+#### _c. Cipung dan Abe hanya akan membeli stok barang yang menghasilkan profit paling tinggi agar efisien. Tampilkan 3 category yang memiliki total profit paling tinggi_
+
+- Langkah pertama adalah menggunakan awk untuk memilih baris kedua ke bawah dari kolom kategori (14) dan kolom profit (20) untuk diproses selanjutnya
+- Kemudian urutkan data dari kolom yang sudah dipilih sebelumnya
+- Terakhir gunakan "head -3" untuk mengeluarkan tiga output teratas
+
+`
+awk -F ',' 'NR>1{print $14","$20}' Sandbox.csv | sort -t ',' -k 2 -nr | head -3
+`
+
+#### _d. Karena ada seseorang yang lapor kepada Cipung dan Abe bahwa pesanannya tidak kunjung sampai, maka mereka ingin mengecek apakah pesanan itu ada. Cari purchase date dan amount (quantity) dari nama adriaens_
+
+- Untuk mengecek pesanan, bisa menggunakan command "grep"
+- Kemudian gunakan command "cut" untuk menampilkan hasil dari pencarian tepatnya kolom order id (1), kolom customer name (6) dan kolom quantity (18) 
+
+`
+grep -i "adriaens" Sandbox.csv | cut -d ',' -f 2,6,18
+`
+
 ### Soal 2
 ### Soal 3
 ### Soal 4
