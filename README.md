@@ -128,7 +128,7 @@ grep -i "adriaens" Sandbox.csv | cut -d ',' -f 2,6,18
 
 
 
-### Soal 2
+## _Soal 2_
 ## _Soal 3_
 ### Dikerjakan Oleh Gandhi Ert Julio (5027231081)
 Soal nomor 3 ini berfokus pada manipulasi dan otomatisasi tugas-tugas terkait dengan file yang diunduh dari sebuah game, yang di sini menggunakan contoh dari game Genshin Impact. Soal ini melibatkan pengetahuan tentang skrip bash, handling file di Linux, decoding dari hexadecimal, dan automasi dengan cron jobs. Untuk menangani soal ini, berikut langkah-langkah yang mungkin perlu diambil:
@@ -276,4 +276,4 @@ di baris fungsi terakhir dari shell search.sh, ini akan membaca URL rahasia dari
 ![image](https://github.com/Gandhiert/NYOBA/assets/136203533/b289883a-f6f5-4620-966b-9b224d7f1013)
 
 >Format image.log
-### Soal 4
+## _Soal 4_
