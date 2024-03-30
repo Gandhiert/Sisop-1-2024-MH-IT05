@@ -143,7 +143,7 @@ awk -F ',' 'NR>1{print $14","$20}' Sandbox.csv | sort -t ',' -k 2 -nr | head -3 
 
 ### Dokumentasi hasil setelah revisi
 
-![Uploading Screenshot from 2024-03-30 16-26-04.png…]()
+![WhatsApp Image 2024-03-30 at 16 16 13](https://github.com/Gandhiert/Sisop-1-2024-MH-IT05/assets/142889150/257f239a-d79b-41f1-b2df-4e34b49d0515)
 
 >Perbaikan di poin b dan c
 
