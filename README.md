@@ -793,3 +793,5 @@ Contoh format/hasil dari isi file adalah sebagai berikut :
 ![image](https://github.com/Gandhiert/BARU-NYOBA/assets/136203533/a5599e74-177b-4767-aa39-29787bfc5db8)
 >Isi dari Log Metrics tersebut
 
+### Revisi
+Tidak ada.
