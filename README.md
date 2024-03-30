@@ -126,6 +126,9 @@ grep -i "adriaens" Sandbox.csv | cut -d ',' -f 2,6,18
 ![image](https://github.com/Gandhiert/Sisop-1-2024-MH-IT05/assets/142889150/9511b736-4922-4e2f-86c1-465fe174b1d0)
 >Hasil ketika menjalankan sandbox.sh
 
+### Revisi
+1. Kesalahan hasil pada poin b. Sepertinya ada kesalahan saat membaca kolom sehingga hasil yang ditampilkan bukanlah profit paling kecil. Akhirnya saya mengubah metode sort nya menjadi:
+
 
 
 ## _Soal 2_
