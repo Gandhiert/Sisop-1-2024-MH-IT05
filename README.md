@@ -128,12 +128,14 @@ grep -i "adriaens" Sandbox.csv | cut -d ',' -f 2,6,18
 
 ### Revisi
 1. Kesalahan hasil pada poin b. Sepertinya ada kesalahan saat membaca kolom sehingga hasil yang ditampilkan bukanlah profit paling kecil. Akhirnya saya mengubah metode sort nya menjadi:
+   
 `
 awk -F ',' 'NR>1{if (min==""){min=$20; customer=$7} else {if ($20<min) {min=$20; customer=$7}}} END {print customer","min}' Sandbox.csv
 `
 >menggunakan if else untuk mencari nilai minimumnya
 
 2. Kesalahan saat menampilkan hasil poin c, dimana hasil ditampilkan tidak urut dari yang terkecil. Perbaikan dilakukan pada kode menjadi:
+   
 `
 awk -F ',' 'NR>1{print $14","$20}' Sandbox.csv | sort -t ',' -k 2 -nr | head -3 | sort -t ',' -k 2 -n
 `
