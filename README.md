@@ -625,6 +625,43 @@ di baris fungsi terakhir dari shell search.sh, ini akan membaca URL rahasia dari
 
 >Format image.log
 
+### Revisi
+
+Terdapat kesalahan output dalam image.log, berulang kali hasil dari tiap mencari string hexadecimal dicetak yaitu :
+![Screenshot 2024-03-30 223139](https://github.com/Gandhiert/NYOBA/assets/136203533/f5d858ca-7fc0-4ce0-815f-5d56e75b923a)
+
+Untuk menghindari duplikasi log pada image.log, skrip telah dimodifikasi dengan menambahkan dua variabel kontrol, `found_printed` dan `not_found_printed`. Ini bertindak sebagai penanda untuk menentukan apakah status `FOUND` atau `NOT FOUND` telah dicetak ke dalam log.
+
+```bash
+found_printed=0
+not_found_printed=0
+```
+
+Kemudian, saya memodifikasi fungsi `handle_file` agar hanya mencetak status FOUND dan NOT FOUND sekali untuk setiap kondisi yang ditemukan selama eksekusi skrip. Modifikasi ini dilakukan dengan memeriksa nilai dari `found_printed` dan `not_found_printed` sebelum mencetak log:
+```bash
+if [[ $file_content =~ $url_pattern ]]; then
+    if [[ $found_printed -eq 0 ]]; then
+        echo "[$(date '+%Y/%m/%d %H:%M:%S')] [FOUND] [$direktori/genshin_character/$file_txt]" >> $log_path
+        found_printed=1
+    fi
+    mv secret.txt $FILE_DIR
+else
+    if [[ $not_found_printed -eq 0 ]]; then
+        echo "[$(date '+%Y/%m/%d %H:%M:%S')] [NOT FOUND] [$direktori/genshin_character/$file_txt]" >> $log_path
+        not_found_printed=1
+    fi
+fi
+```
+
+Dengan penambahan ini, setiap status (`FOUND` atau `NOT FOUND`) akan muncul satu kali setiap pengecekan dalam log untuk seluruh eksekusi skrip, bukan berulang kali.
+
+### Dokumentasi hasil revisi
+
+![Screenshot 2024-03-30 224109](https://github.com/Gandhiert/NYOBA/assets/136203533/499997ce-f5ee-4afe-90a4-c6ef32a6b8b1)
+
+>Format image log dan hasil yang tidak berungkali tiap pengecekan string hexadecimal foto karakter.
+
+
 ## _Soal 4_
 ### Dikerjakan Oleh Gandhi Ert Julio (5027231081)
 Soal nomor 4 ini berfokus untuk membuat beberapa skrip bash untuk memonitor sumber daya sistem dan melakukan agregasi data. Berikut adalah langkah-langkah yang harus dilakukan berdasarkan instruksi yang ada:
