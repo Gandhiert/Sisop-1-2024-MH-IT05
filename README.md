@@ -431,6 +431,33 @@ Maka jika kita panggil, akan muncul seperti ini:
 
 ![Screen Shot 2024-03-25 at 23 38 08](https://github.com/Rrrrein/coba-coba-3/assets/150585861/28e8a7d6-fb93-49e6-9190-60367d920343)
 
+### Revisi
+1. Terjadi kesalahan di bagian register.sh. Dalam meng-inputkan password user, seharusnya memenuhi kriteria seperti:
+   	- Minimal karakter berjumlah 8
+   	- Memiliki 1 huruf kapital
+   	- Memiliki 1 huruf kecil
+   	- Memiliki 1 digit angka
+   Namun, ketika mencoba menginput yang salah, dapat terbaca dengan benar oleh programnya.
+Seperti ini:
+![Screen Shot 2024-03-30 at 13 09 56](https://github.com/Rrrrein/coba-coba-3/assets/150585861/138bd3a3-7fbc-44f9-800e-58aa88ec9931)
+- Percobaan pertama adalah memasukkan "Sisopmudah"
+- Percobaan kedua adalah memasukkan "sisopmudah"
+- Percobaan ketiga adalah memasukkan "cobaakun123"
+- Percobaan keempat adalah memasukkan "sisop123"
+  Diini terdapat kesalahan karena "sisop123" tidak mengandung huruf kapital, perbaikan kodenya adalah seperti ini
+	```
+	while true; do
+        read -s -p "Enter password: " password
+        echo
+
+        if [[ "$password" =~ [[:upper:]] && "$password" =~ [[:lower:]] && "$password" =~ [[:digit:]] && ${#password} -ge 8 ]]; then
+            break
+        else
+            echo "Password must contain at least one uppercase letter, one lowercase letter, one digit, and be at least 8 characters long."
+        fi
+    	done
+ 	```
+
 ## _Soal 3_
 ### Dikerjakan Oleh Gandhi Ert Julio (5027231081)
 Soal nomor 3 ini berfokus pada manipulasi dan otomatisasi tugas-tugas terkait dengan file yang diunduh dari sebuah game, yang di sini menggunakan contoh dari game Genshin Impact. Soal ini melibatkan pengetahuan tentang skrip bash, handling file di Linux, decoding dari hexadecimal, dan automasi dengan cron jobs. Untuk menangani soal ini, berikut langkah-langkah yang mungkin perlu diambil:
